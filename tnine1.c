@@ -3,102 +3,99 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define MAX_LENGTH 8400
+#define MAX_LENGTH 100      //Maximum length of string that can be stored  
+#define MAX_CONTACTS 42     //Maximum contacts 
+#define MAX_INFO 2          //Number of informations stored in contacts - name, number
 
-void findContact(const char* userNumber, char list[MAX_LENGTH+1]) {
-    bool foundAny = false;
+//Finds substring if presents return 1 or 0
+bool isSubstring(char* substring, char* string) {
 
-    for (int index = 0; list[index] != '\0'; index++) {
-        int index02;
 
-        for (index02 = 0; index02 < strlen(userNumber); index02++) {
-            if (list[index + index02] != userNumber[index02]) {
-                break;
-            }
-        }
 
-        if (index02 == strlen(userNumber)) {
-            foundAny = true;
-
-            int lineStart = index;
-            while (lineStart > 0 && list[lineStart - 1] != '\n') {
-                lineStart--;
-            }
-
-            int lineEnd = index;
-            while (list[lineEnd] != '\n' && list[lineEnd] != '\0') {
-                lineEnd++;
-            }
-
-            for (int i = lineStart; i < lineEnd; i++) {
-                putchar(list[i]);
-            }
-            printf("\n");
-
-            index = lineEnd;
-        }
-    }
-
-    if (!foundAny) {
-        printf("Not found.\n");
-    }
 }
 
-bool isValid(const char* userNumber){
-    bool valid = true; 
-    int index = 0;
+/*void findContact(const char* userNumber, char contacts[MAX_CONTACTS][MAX_INFO][MAX_LENGTH]) {
 
-    while(userNumber[index] != '\0'){
-        if(userNumber[index] <= '9' && userNumber[index] >= '0'){
-            valid = true;
-        } else{
-            valid = false;
-            break;
+    bool found = false;
+    int contact = 0;
+    int info = 0;
+
+    for(int position = 0; position < MAX_CONTACTS; position++){
+        if(strcmp(contacts[contact][info][position], userNumber) == 0){
+            
+        }
+    }
+
+    if(found == false){
+        printf("Not found.\n");
+    }
+
+}*/
+
+//Checks if the input is valid 
+bool isValid(const char* userNumber) {
+    int index = 0;
+    
+    //Checking if the provided number is Valid (no symbols or characters)
+    while (userNumber[index] != '\0') {
+        if (userNumber[index] < '0' || userNumber[index] > '9') {
+            //Non-Valid
+            return false;
         }
         index++;
     }
-
-    return valid;
-
+    
+    //Valid
+    return true;
 }
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
+    char contacts[MAX_CONTACTS][MAX_INFO][MAX_LENGTH] = {{{0}}};
+    int row = 0;
     int character;
-    int index = 0;
-    char list[MAX_LENGTH+1];
+    int column = 0;
 
-    while((character = getchar()) != EOF){
-        if(index < MAX_LENGTH){
-            list[index++] = character;
-        } else{
-            break;
+    //Loop that goes through every character until it reaches EOF - End Of File
+    while ((character = getchar()) != EOF && row < MAX_CONTACTS) {
+        if (character != '\n') {
+            //Inserts character in the right column 0 - name, 1 - tel. number
+            contacts[row][column][strlen(contacts[row][column])] = character; 
+        } else {
+            //Inserts the end of the string and increments column, to keep the right order
+            contacts[row][column][strlen(contacts[row][column])] = '\0'; 
+            column++; 
+            //If the column reaches number 2, it restarts and set to 0
+            if (column == MAX_INFO) {
+                column = 0;
+                row++; 
+            }
         }
     }
 
-    list[index] = '\0';
-
-    switch (argc)
-    {
-    case 2:
+    //Switch that controls number of arguments
+    switch (argc) {
+    //When there is a number on stdin it checks its validity and searches through the contacts
+    case 2: {
+        //userNumber stores given number on stdin
         const char* userNumber = argv[1];
-        int index = 0;
 
-        if(isValid(userNumber) != 0){
-           findContact(userNumber, list); 
+        if (isValid(userNumber)) {
+            findContact(userNumber, contacts);
         } else {
             printf("Error occurred: Please provide valid input (0-9)\n");
         }
-        
-
         break;
-    
-    case 1:
-        printf("%s", list);
-        printf("\n");
-
+    }
+    //When there is no number provided it prints all the contacts 
+    case 1: {
+        //
+        for (int i = 0; i < row+1; i++) {
+            printf("%s\n", contacts[i][0]);
+            printf("%s\n", contacts[i][1]);
+        }
         break;
-
+    }
+    //When there is more than that number provided it prints Error
     default:
         printf("Error occurred: Too many arguments provided! Try again with one or two arguments only!\n");
         break;
@@ -106,3 +103,5 @@ int main(int argc, char const *argv[])
 
     return 0;
 }
+
+
