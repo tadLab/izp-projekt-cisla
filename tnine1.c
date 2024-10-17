@@ -9,8 +9,24 @@
 
 //Finds substring if presents return 1 or 0
 bool isSubstring(char* substring, char* string) {
+    for(int index = 0; string[index] != '\0'; index++){
+        if(string[index] == substring[0]){
+            bool match = true;
+            for(int index02 = 1; index02 < strlen(substring); index02++){
+                if(string[index+index02] != substring[index02]){
+                    match = false;
+                    break;
+                } 
+            }
 
+        if(match){
+            return true;
+        }
+        
+        } 
+    }
 
+    return false;
 
 }
 
@@ -79,11 +95,21 @@ int main(int argc, char const *argv[]) {
         //userNumber stores given number on stdin
         const char* userNumber = argv[1];
 
-        if (isValid(userNumber)) {
+        char* string = "Ahoj ja jsem Tade.";
+        char* substring = "jak";
+
+        if(isSubstring(substring, string)){
+            printf("Its substring!\n");
+        } else{
+            printf("Its not substring!\n");
+        }
+       
+
+        /*if (isValid(userNumber)) {
             findContact(userNumber, contacts);
         } else {
             printf("Error occurred: Please provide valid input (0-9)\n");
-        }
+        }*/
         break;
     }
     //When there is no number provided it prints all the contacts 
